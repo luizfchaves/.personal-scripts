@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+export PATH="$PATH:/opt/nvim/"

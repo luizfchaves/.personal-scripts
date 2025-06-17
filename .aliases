@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+# Summary
+# [c-homebrew]
+# [c-neovim]
+# [c-gyra-saas]
+# [c-gyra-legacy]
+
+#[c-neovim]
+alias vim=nvim
+alias vv="nvim ."
+
+#[c-gyra-saas]
+alias gsc="code ~/gyra-saas/gyra-saas.code-workspace"
+alias gsn="nvim ~/gyra-saas"
+alias gsgb="~/.personal-scripts/utils/move-branch.sh ~/gyra-saas"
+alias gscd="mongosh gyramais --quiet --port 27057 --eval \"db.Report.deleteMany({})\" &&
+mongosh gyramais --quiet --port 27057 --eval \"db.Section.deleteMany({})\" &&
+mongosh gyramais --quiet --port 27057 --eval \"db.SectionComment.deleteMany({})\" &&
+mongosh gyramais --quiet --port 27057 --eval \"db.SectionDetails.deleteMany({})\" &&
+mongosh gyramais --quiet --port 27067 --eval \"db.PolicyResult.deleteMany({})\" &&
+mongosh gyramais --quiet --port 27067 --eval \"db.PolicyRuleGroupResult.deleteMany({})\" &&
+mongosh gyramais --quiet --port 27067 --eval \"db.PolicyRuleResult.deleteMany({})\" &&
+mongosh gyramais --quiet --port 27067 --eval \"db.PolicyRuleResultJoin.deleteMany({})\" &&
+mongosh gyramais --quiet --port 27011 --eval \"db.NodeCreditPolicy.deleteMany({})\" &&
+mongosh gyramais --quiet --port 27011 --eval \"db.Opportunity.deleteMany({})\""
+
+#[c-gyra-legacy]
+alias glc="code ~/gyra-legacy/gyra-legacy.code-workspace"
+alias gln="nvim ~/gyra-legacy"
+alias glgb="~/.personal-scripts/utils/move-branch.sh ~/gyra-legacy"

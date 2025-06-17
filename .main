@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+source ~/.personal-scripts/.configs
+source ~/.personal-scripts/.aliases
+source ~/.personal-scripts/.nvm-config
