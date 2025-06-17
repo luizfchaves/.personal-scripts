@@ -11,7 +11,7 @@ alias vv="nvim ."
 
 #[c-gyra-saas]
 alias gsc="code ~/gyra-saas/gyra-saas.code-workspace"
-alias gsn="nvim ~/gyra-saas"
+alias gsn="cd ~/gyra-saas && nvim ."
 alias gsgb="~/.personal-scripts/utils/move-branch.sh ~/gyra-saas"
 alias gscd="mongosh gyramais --quiet --port 27057 --eval \"db.Report.deleteMany({})\" &&
 mongosh gyramais --quiet --port 27057 --eval \"db.Section.deleteMany({})\" &&
@@ -26,5 +26,5 @@ mongosh gyramais --quiet --port 27011 --eval \"db.Opportunity.deleteMany({})\""
 
 #[c-gyra-legacy]
 alias glc="code ~/gyra-legacy/gyra-legacy.code-workspace"
-alias gln="nvim ~/gyra-legacy"
+alias gln="cd ~/gyra-legacy && nvim ."
 alias glgb="~/.personal-scripts/utils/move-branch.sh ~/gyra-legacy"
