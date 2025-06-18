@@ -76,7 +76,8 @@ for project in "${projects[@]}"; do
 
     # check if the branch exists
     merged=false
-    if git show-ref --verify --quiet "refs/heads/$BRANCH"; then
+    if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+        git fetch origin "$BRANCH":"$BRANCH" >/dev/null 2>&1 || { echo "Failed to fetch $BRANCH from origin in $project"; exit 1; }
         merged=true
         git merge --no-ff "$BRANCH" >/dev/null 2>&1 || { echo "Failed to merge $BRANCH into develop in $project"; exit 1; }
     fi
