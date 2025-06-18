@@ -21,12 +21,10 @@ if [[ " $* " == *" --reset "* ]]; then
   withReset=true
 fi
 
-# echo "withReset $withReset"
-echo -e "❇️ Project Name \t\tMerged\tReseted"
+echo -e "❇️ Project Name \t\tMerged\tReseted\tEnvDiff"
 
 # Loop through each project directory
 for project in "${projects[@]}"; do
-    # echo "Processing $project..."
 
     cd "$project" || { echo "Failed to change directory to $project"; exit 1; }
     
@@ -76,25 +74,41 @@ for project in "${projects[@]}"; do
         git merge --no-ff "$BRANCH" >/dev/null 2>&1 || { echo "Failed to merge $BRANCH into develop in $project"; exit 1; }
     fi
 
+    hasEnvDiff=false
+    # check diff between $BRANCH and main and check if .env-sample is different
+    if ${merged}; then
+        envFiles=(".env-sample" ".env.local.sample")
+        for envFile in "${envFiles[@]}"; do
+            if [ ! -f "$envFile" ]; then
+                continue
+            fi
+
+            if ! git diff --quiet "$BRANCH" main -- "$envFile"; then
+                hasEnvDiff=true
+                break
+            fi
+        done
+    fi
+
     git push origin develop >/dev/null 2>&1 || { echo "Failed to push develop in $project"; exit 1; }
 
     textOk="✅ "
     textProject="$project"
-    # text project needs to have 30 characters, complete with spaces
-    textProject=$(printf "%-30s" "$textProject")
+    textProject=$(printf "%-29s" "$textProject")
     textMerged="\t"
     if $merged; then
-        textMerged="✅\t"
+        textMerged="  ✅\t"
     fi
-    textReseted=""
+    textReseted="\t"
     if $reseted; then
-        textReseted="✅"
+        textReseted="  ✅\t"
     fi
-    # # OK - PROJECTNAME - MERGED - RESETTED
-    # echo "✅ - $project 
-    # echo needs tab to show as a table
-    echo -e "$textOk$textProject$textMerged$textReseted"
-
+    textHasEnvDiff="\t"
+    if $hasEnvDiff; then
+        textHasEnvDiff="  ❗\t"
+    fi
+    # # OK - PROJECTNAME - MERGED - RESETTED - HAS_ENV_DIFF
+    echo -e "$textOk$textProject$textMerged$textReseted$textHasEnvDiff"
 
     cd ..
 done
