@@ -21,7 +21,14 @@ if [[ " $* " == *" --reset "* ]]; then
   withReset=true
 fi
 
-echo -e "❇️ Project Name \t\tMerged\tReseted\tEnvDiff"
+# Arrumar um jeito melhor de fazer o cabeçalho
+headOk=" .  "
+headProject="Project Name          "
+headMerged="  Merged  "
+headReseted=" Reseted  "
+headHasEnvDiff="   Env    "
+headHasMigrations="Migration "
+echo -e "$headOk$headProject$headMerged$headReseted$headHasEnvDiff$headHasMigrations"
 
 # Loop through each project directory
 for project in "${projects[@]}"; do
@@ -35,7 +42,7 @@ for project in "${projects[@]}"; do
     fi
 
     if [ -n "$(git status --porcelain)" ]; then
-        echo "WARNING: Uncommitted changes in $project. Do you want to throw them away? (y/N)"
+        echo "WARNING: $project has uncommitted changes. Do you want to throw them away? (y/N)"
         read -r answer
         if [[ ! "$answer" =~ ^[Yy]$ ]]; then
             echo "Stopping script due to uncommitted changes in $project."
@@ -75,6 +82,7 @@ for project in "${projects[@]}"; do
     fi
 
     hasEnvDiff=false
+    hasMigrations=false
     # check diff between $BRANCH and main and check if .env-sample is different
     if ${merged}; then
         envFiles=(".env-sample" ".env.local.sample")
@@ -88,29 +96,52 @@ for project in "${projects[@]}"; do
                 break
             fi
         done
+
+        #if has folder migrations, check if there are new migrations
+        if [ -d "db/migrations" ]; then
+            if ! git diff --quiet "$BRANCH" main -- "db/migrations/"; then
+                hasMigrations=true
+            fi
+        fi
     fi
 
     git push origin develop >/dev/null 2>&1 || { echo "Failed to push develop in $project"; exit 1; }
 
-    textOk="✅ "
+
+    # Arrumar um jeito melhor de fazer o corpo
+    textOk=" .  "
+    if $merged || $reseted || $hasEnvDiff || $hasMigrations; then
+        textOk="[V] "
+    fi
     textProject="$project"
-    textProject=$(printf "%-29s" "$textProject")
-    textMerged="\t"
+    textProject=$(printf "%-22s" "$textProject")
+
+    textMerged="    ."
     if $merged; then
-        textMerged="  ✅\t"
+        textMerged="   [V]"
     fi
-    textReseted="\t"
+    textMerged=$(printf "%-10s" "$textMerged")
+
+    textReseted="    ."
     if $reseted; then
-        textReseted="  ✅\t"
+        textReseted="   [V]"
     fi
-    textHasEnvDiff="\t"
+    textReseted=$(printf "%-10s" "$textReseted")
+
+    textHasEnvDiff="    ."
     if $hasEnvDiff; then
-        textHasEnvDiff="  ❗\t"
+        textHasEnvDiff="   [V]"
     fi
-    # # OK - PROJECTNAME - MERGED - RESETTED - HAS_ENV_DIFF
-    echo -e "$textOk$textProject$textMerged$textReseted$textHasEnvDiff"
+    textHasEnvDiff=$(printf "%-10s" "$textHasEnvDiff")
+
+
+    textHasMigrations="    ."
+    if $hasMigrations; then
+        textHasMigrations="   [V]"
+    fi
+    textHasMigrations=$(printf "%-10s" "$textHasMigrations")
+
+    echo -e "$textOk$textProject$textMerged$textReseted$textHasEnvDiff$textHasMigrations"
 
     cd ..
 done
-
-echo "All projects updated."
