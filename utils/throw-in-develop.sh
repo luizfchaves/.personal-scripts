@@ -79,7 +79,7 @@ for project in "${projects[@]}"; do
     if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
         git fetch origin "$BRANCH":"$BRANCH" >/dev/null 2>&1 || { echo "Failed to fetch $BRANCH from origin in $project"; exit 1; }
         merged=true
-        git merge --no-ff "$BRANCH" >/dev/null 2>&1 || { echo "Failed to merge $BRANCH into develop in $project"; exit 1; }
+        git merge --no-ff "origin/$BRANCH" >/dev/null 2>&1 || { echo "Failed to merge $BRANCH into develop in $project"; exit 1; }
     fi
 
     hasEnvDiff=false
@@ -92,7 +92,7 @@ for project in "${projects[@]}"; do
                 continue
             fi
 
-            if ! git diff --quiet "$BRANCH" main -- "$envFile"; then
+            if ! git diff --quiet "origin/$BRANCH" origin/main -- "$envFile"; then
                 hasEnvDiff=true
                 break
             fi
@@ -100,7 +100,7 @@ for project in "${projects[@]}"; do
 
         #if has folder migrations, check if there are new migrations
         if [ -d "db/migrations" ]; then
-            if ! git diff --quiet "$BRANCH" main -- "db/migrations/"; then
+            if ! git diff --quiet origin/main "origin/$BRANCH" --diff-filter=AMRC  -- "db/migrations/"; then
                 hasMigrations=true
             fi
         fi
