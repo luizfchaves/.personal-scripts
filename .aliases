@@ -6,6 +6,7 @@
 # [c-gyra-legacy]
 
 #[c-neovim]
+alias herewegoagain="cd ~/.config/nvim && nvim ."
 alias vim=nvim
 alias vv="nvim ."
 
