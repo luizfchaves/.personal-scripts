@@ -58,8 +58,8 @@ for project in "${projects[@]}"; do
 
     git checkout main >/dev/null 2>&1 || { echo "Failed to checkout main in $project"; exit 1; }
     git pull origin main >/dev/null 2>&1 || { echo "Failed to pull main in $project"; exit 1; }
-    git checkout develop >/dev/null 2>&1 || { echo "Failed to checkout develop in $project"; exit 1; }
-    git reset --hard origin/develop >/dev/null 2>&1 || { echo "Failed to reset develop in $project"; exit 1; }
+    git checkout sandbox >/dev/null 2>&1 || { echo "Failed to checkout sandbox in $project"; exit 1; }
+    git reset --hard origin/sandbox >/dev/null 2>&1 || { echo "Failed to reset sandbox in $project"; exit 1; }
 
     reseted=false
     if $withReset; then
@@ -67,11 +67,11 @@ for project in "${projects[@]}"; do
         if ! git diff --quiet main; then
             reseted=true
             git reset --hard origin/main >/dev/null 2>&1 || { echo "Failed to reset in $project"; exit 1; }
-            git push origin develop --force >/dev/null 2>&1 || { echo "Failed to force push develop in $project"; exit 1; }
+            git push origin sandbox --force >/dev/null 2>&1 || { echo "Failed to force push sandbox in $project"; exit 1; }
         fi
 
     else
-        git merge main >/dev/null 2>&1 || { echo "Failed to merge main into develop in $project"; exit 1; }
+        git merge main >/dev/null 2>&1 || { echo "Failed to merge main into sandbox in $project"; exit 1; }
     fi
 
     # check if the branch exists
@@ -79,7 +79,7 @@ for project in "${projects[@]}"; do
     if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
         git fetch origin "$BRANCH":"$BRANCH" >/dev/null 2>&1 || { echo "Failed to fetch $BRANCH from origin in $project"; exit 1; }
         merged=true
-        git merge --no-ff "origin/$BRANCH" >/dev/null 2>&1 || { echo "Failed to merge $BRANCH into develop in $project"; exit 1; }
+        git merge --no-ff "origin/$BRANCH" >/dev/null 2>&1 || { echo "Failed to merge $BRANCH into sandbox in $project"; exit 1; }
     fi
 
     hasEnvDiff=false
@@ -106,7 +106,7 @@ for project in "${projects[@]}"; do
         fi
     fi
 
-    git push origin develop >/dev/null 2>&1 || { echo "Failed to push develop in $project"; exit 1; }
+    git push origin sandbox >/dev/null 2>&1 || { echo "Failed to push sandbox in $project"; exit 1; }
 
 
     # Arrumar um jeito melhor de fazer o corpo
