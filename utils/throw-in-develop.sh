@@ -2,7 +2,7 @@
 
 ORIGINAL_DIR=${1}
 if [ -z "$ORIGINAL_DIR" ]; then
-    echo "Usage: $0 <original_directory> [branch_name] [--reset (optional)]"
+    echo "Usage: <original_directory> [branch_name] [--reset (optional)]"
     exit 1
 fi
 cd "$ORIGINAL_DIR" || { echo "Failed to change directory to $ORIGINAL_DIR"; exit 1; }
@@ -10,7 +10,7 @@ cd "$ORIGINAL_DIR" || { echo "Failed to change directory to $ORIGINAL_DIR"; exit
 projects=($(ls -d */ | sed 's#/##'))
 BRANCH=${2}
 if [ -z "$BRANCH" ]; then
-    echo "No branch specified."
+    echo "Usage: <original_directory> [branch_name] [--reset (optional)]"
     exit 1
 fi
 
@@ -58,6 +58,7 @@ for project in "${projects[@]}"; do
 
     git checkout main >/dev/null 2>&1 || { echo "Failed to checkout main in $project"; exit 1; }
     git pull origin main >/dev/null 2>&1 || { echo "Failed to pull main in $project"; exit 1; }
+    git fetch >/dev/null 2>&1 || { echo "Failed to fetch in $project"; exit 1; }
     git checkout sandbox >/dev/null 2>&1 || { echo "Failed to checkout sandbox in $project"; exit 1; }
     git reset --hard origin/sandbox >/dev/null 2>&1 || { echo "Failed to reset sandbox in $project"; exit 1; }
 
@@ -66,7 +67,7 @@ for project in "${projects[@]}"; do
         #check if has diff with main
         if ! git diff --quiet main; then
             reseted=true
-            git reset --hard origin/main >/dev/null 2>&1 || { echo "Failed to reset in $project"; exit 1; }
+            git reset --hard main >/dev/null 2>&1 || { echo "Failed to reset in $project"; exit 1; }
             git push origin sandbox --force >/dev/null 2>&1 || { echo "Failed to force push sandbox in $project"; exit 1; }
         fi
 
@@ -77,7 +78,7 @@ for project in "${projects[@]}"; do
     # check if the branch exists
     merged=false
     if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
-        git fetch origin "$BRANCH":"$BRANCH" >/dev/null 2>&1 || { echo "Failed to fetch $BRANCH from origin in $project"; exit 1; }
+        git fetch >/dev/null 2>&1 || { echo "Failed to fetch $BRANCH from origin in $project"; exit 1; }
         merged=true
         git merge --no-ff "origin/$BRANCH" >/dev/null 2>&1 || { echo "Failed to merge $BRANCH into sandbox in $project"; exit 1; }
     fi

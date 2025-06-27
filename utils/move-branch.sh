@@ -38,16 +38,16 @@ for project in "${projects[@]}"; do
         #continue
     fi
 
-    git fetch origin >/dev/null 2>&1  || { echo "Failed to fetch in $project"; cd "$ORIGINAL_DIR"; continue; }
+    git checkout main >/dev/null 2>&1
+    git pull >/dev/null 2>&1  || { echo "Failed to fetch in $project"; cd "$ORIGINAL_DIR"; continue; }
     
-    if git show-ref --quiet refs/heads/$BRANCH >/dev/null 2>&1; then
+    if git ls-remote --exit-code --heads origin $BRANCH >/dev/null 2>&1; then
         echo "['$BRANCH'] - $project."
         git checkout $BRANCH >/dev/null 2>&1
+	git pull origin $BRANCH >/dev/null 2>&1
     else
         echo "['main'] - $project."
-        git checkout main >/dev/null 2>&1
     fi
-
 
     cd ..
     
